@@ -20,13 +20,20 @@ private UserPasswordHasherInterface $hasher;
 
     public function load(ObjectManager $manager): void
     {
-        $user = new User();
-        $user->setEmail('admin@mail.ru');
-        $user->setRoles(['ROLE_ADMIN']);
-        $password = $this->hasher->hashPassword($user, 'Admin123!');
-        $user->setPassword($password);
+            $user = new User();
+            $user->setEmail('admin@mail.ru');
+            $user->setRoles(['ROLE_ADMIN']);
+            $password = $this->hasher->hashPassword($user, 'Admin123!');
+            $user->setPassword($password);
+            $manager->persist($user);
 
-        $manager->persist($user);
-        $manager->flush();
+            $user = new User();
+            $user->setEmail('user@mail.ru');
+            $user->setRoles(['ROLE_USER']);
+            $password = $this->hasher->hashPassword($user, 'User123!');
+            $user->setPassword($password);
+            $manager->persist($user);
+
+            $manager->flush();
     }
 }

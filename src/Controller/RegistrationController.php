@@ -24,6 +24,15 @@ class RegistrationController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             // encode the plain password
+
+            //проверка,на выбор роли
+            $roles = $request->request->all()['registration_form']['roles'];
+            if (empty($roles)) {
+                return $this->redirectToRoute('app_register');
+            }
+
+            $user->setRoles($roles);
+
             $user->setPassword(
                 $userPasswordHasher->hashPassword(
                     $user,

@@ -4,8 +4,11 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Form\DataType;
+use App\Entity\Data;
 
 class DashboardController extends AbstractController
 {
@@ -21,14 +24,10 @@ class DashboardController extends AbstractController
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         $array = ['admin' => 'ROLE_ADMIN', 'user' => 'ROLE_USER'];
-        $roles = $this->getUser()->getRoles();
-        if (!isset($roles)) {
-            return $this->render('registration/register.html.twig', [
-            ]);
-        }
+
         $id = $this->getUser()->getId();
         foreach ($array as $key => $arr) {
-            if (array_search($arr, $roles) !== false) {
+            if (array_search($arr, $this->getUser()->getRoles()) !== false) {
                 $route = $this->redirectToRoute($key, [
                     'slug' => $id,
                 ]);
@@ -55,10 +54,67 @@ class DashboardController extends AbstractController
 
     public function content($id, $route)
     {
+        $form = $this->createForm(DataType::class, new Data(), [
+            'action' => $this->generateUrl('data_form'),
+        ]);
+
+        $data = $this->entityManager->getRepository(Data::class)->findOneBySomeField($this->getUser()->getId());
+        $dates = !empty($data) ? $data : '';
+
         return $this->render('dashboard/index.html.twig', [
             'id' => $id,
             'name' => $this->getUser()->getEmail(),
             'role' => $route,
+            'formData' => $form->createView(),
+            'dates' => $dates,
+        ]);
+    }
+
+    #[Route('/data_form', name: 'data_form',methods: ['POST'])]
+    /**
+     * param Request $request
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
+    public function data_form(Request $request, EntityManagerInterface $entityManager)
+    {
+
+        $data = new Data();
+
+        $form = $this->createForm(DataType::class, $data);
+        $form->handleRequest($request);
+
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+        $url = $_SERVER['HTTP_REFERER'];
+        $routeName = strpos($url, 'admin');
+
+        $route = ($routeName === 'false') ? 'admin' : 'user';
+
+        $data->setRecordingDate(new \DateTime());
+
+        $data->setUser($this->getUser());
+
+        $path = $this->getParameter('kernel.project_dir') . '/public/uploads';
+        $img = $request->files->get('data')['file'];
+
+        $type = $img->getmimeType();
+
+        if (!is_bool(strpos($type, 'jpeg')) OR !is_bool(strpos($type, 'pdf')) OR !is_bool(strpos($type, 'doc'))) {
+            $img->move($path,rand(1, 15000).$img->getClientOriginalName());
+        } else {
+            $data->setFile('Null');
+        }
+
+
+        $entityManager->persist($data);
+        $entityManager->flush();
+        }
+
+        return $route = $this->redirectToRoute($route, [
+            'slug' => $this->getUser()->getId(),
+            'dates' => $this->entityManager->getRepository(Data::class)->findOneBySomeField($this->getUser()->getId()),
         ]);
     }
 

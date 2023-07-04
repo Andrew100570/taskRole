@@ -11,5 +11,46 @@
 <div class="example-wrapper">
     <h1>Hello {{ role }}! ✅ Number {{ id }}</h1>
     <h1>Nice to meet you{{ name }}! ✅</h1>
+
+    <h1>Data</h1>
+
+    {{ form_start(formData) }}
+
+    {{ form_row(formData.Name) }}
+    {{ form_row(formData.Data) }}
+    {{ form_row(formData.file) }}
+
+    <button type="submit" class="btn">Add data</button>
+    {{ form_end(formData) }}
 </div>
+
+
+    <div class="example-wrapper">
+        {% if dates is not empty %}
+        {% for data in dates %}
+
+        <li>Название заметки:{{ data.Name }}</li>
+        <li>Описание заметки:{{ data.data }}</li>
+        <li>Путь файла заметки{{ data.file }}</li>
+        <li>Время записи заметки:{{ data.RecordingDate |date('Y-m-d') }}</li>
+        <br>
+        {% endfor %}
+        {% endif %}
+    </div>
+
+{% if role == 'admin' %}
+
+        {#{% for application in applications %}#}
+            {#<a href="{{ path('comment_form', {'slug': application.id}) }}">{{ application.id }}</a>#}
+            {#<li>Номер заявки:{{ application.id }}</li>#}
+            {#<li>Описание:{{ application.discription }}</li>#}
+            {#<li>{{ application.timeofcreation |date('d-m-Y')}}</li>#}
+            {#<li>{{ application.lstedittime |date('d-m-Y')}}</li>#}
+            {#<li>Данные пользователя:{{ application.username }}</li>#}
+            {#<li>Cтатус:{{ application.status }}</li>#}
+            {#<li>Комментарий:{{ application.comments }}</li>#}
+            {#<br>#}
+
+        {#{% endfor %}#}
+    {% endif %}
 {% endblock %}

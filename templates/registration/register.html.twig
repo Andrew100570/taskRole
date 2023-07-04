@@ -17,5 +17,21 @@
 
         <button type="submit" class="btn">Register</button>
     {{ form_end(registrationForm) }}
+    <script>
+        function disableModule()
+        {
+            var disabledString = $('#foo_disabled').val();
 
+            var disabledArray = disabledString.split('|');
+
+            $.each( disabledArray, function( disKey, disVal )
+            {
+                // deactivate checkboxes
+                $('input[id="'+idCurrent+'"]').attr("disabled", true);
+
+                // grey out label for checkboxes
+                $('label[for="'+idCurrent+'"]').attr("style", "color: gray;");
+            });
+        }
+    </script>
 {% endblock %}

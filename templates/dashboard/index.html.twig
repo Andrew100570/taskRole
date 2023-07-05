@@ -11,7 +11,7 @@
 <div class="example-wrapper">
     <h1>Hello {{ role }}! ✅ Number {{ id }}</h1>
     <h1>Nice to meet you{{ name }}! ✅</h1>
-
+    {% if role != 'admin' %}
     <h1>Data</h1>
 
     {{ form_start(formData) }}
@@ -37,20 +37,15 @@
         {% endfor %}
         {% endif %}
     </div>
-
+    {% endif %}
 {% if role == 'admin' %}
+    {% if dates is not empty %}
+        {% for data in dates %}
+<div style = "list-style-type: none;"  class="example-wrapper">
+          <a href="/user_delete/{{ data.id }}">Удалить пользователя:{{ data.email }} </a>
+</div>
+        {% endfor %}
+    {% endif %}
 
-        {#{% for application in applications %}#}
-            {#<a href="{{ path('comment_form', {'slug': application.id}) }}">{{ application.id }}</a>#}
-            {#<li>Номер заявки:{{ application.id }}</li>#}
-            {#<li>Описание:{{ application.discription }}</li>#}
-            {#<li>{{ application.timeofcreation |date('d-m-Y')}}</li>#}
-            {#<li>{{ application.lstedittime |date('d-m-Y')}}</li>#}
-            {#<li>Данные пользователя:{{ application.username }}</li>#}
-            {#<li>Cтатус:{{ application.status }}</li>#}
-            {#<li>Комментарий:{{ application.comments }}</li>#}
-            {#<br>#}
-
-        {#{% endfor %}#}
     {% endif %}
 {% endblock %}

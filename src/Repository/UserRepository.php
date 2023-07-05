@@ -71,13 +71,16 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?User
-//    {
-//        return $this->createQueryBuilder('u')
-//            ->andWhere('u.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    public function deleteUser(int $value): array
+    {
+        $entityManager = $this->getEntityManager();
+        $query = $entityManager->createQuery(
+            'DELETE u,d
+            FROM App\Entity\User as u and App\Entity\Data as d
+            WHERE id.user = :value and d.user_id = :value'
+        )->setParameter('value', $value);
+
+        // возвращает массив объектов данных
+        return $query->getResult();
+    }
 }

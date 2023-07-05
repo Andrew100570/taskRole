@@ -55,17 +55,17 @@ class DataRepository extends ServiceEntityRepository
 //    }
 
 
-    public function findOneBySomeField(int $value): array
-    {
-        $entityManager = $this->getEntityManager();
-        $query = $entityManager->createQuery(
-            'SELECT d
-            FROM App\Entity\Data d
-            WHERE d.user = :value'
-        )->setParameter('value', $value);
-
-        // возвращает массив объектов данных
-        return $query->getResult();
-    }
+//    public function findOneBySomeField(int $value): array
+//    {
+//        $entityManager = $this->getEntityManager();
+//        $query = $entityManager->createQuery(
+//            'SELECT d
+//            FROM App\Entity\Data d
+//            WHERE d.user = :value'
+//        )->setParameter('value', $value);
+//
+//        // возвращает массив объектов данных
+//        return $query->getResult();
+//    }
 
 }

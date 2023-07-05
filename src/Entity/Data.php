@@ -26,8 +26,8 @@ class Data
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $file = null;
 
-    #[ORM\ManyToOne(inversedBy: 'data')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(inversedBy: 'data',targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable:true,  onDelete: "CASCADE")]
     private ?User $user = null;
 
 

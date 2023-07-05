@@ -9,6 +9,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Form\DataType;
 use App\Entity\Data;
+use App\Entity\User;
 
 class DashboardController extends AbstractController
 {
@@ -58,7 +59,10 @@ class DashboardController extends AbstractController
             'action' => $this->generateUrl('data_form'),
         ]);
 
-        $data = $this->entityManager->getRepository(Data::class)->findOneBySomeField($this->getUser()->getId());
+        $data = ($route === 'admin')
+            ? $this->entityManager->getRepository(User::class)->findAll()
+            : $this->entityManager->getRepository(Data::class)->findOneBySomeField($this->getUser()->getId());
+
         $dates = !empty($data) ? $data : '';
 
         return $this->render('dashboard/index.html.twig', [
@@ -112,9 +116,33 @@ class DashboardController extends AbstractController
         $entityManager->flush();
         }
 
+        $data = ($route === 'admin')
+            ? $this->entityManager->getRepository(User::class)->findAll()
+            : $this->entityManager->getRepository(Data::class)->findOneBySomeField($this->getUser()->getId());
+
+        $dates = !empty($data) ? $data : '';
+
         return $route = $this->redirectToRoute($route, [
             'slug' => $this->getUser()->getId(),
-            'dates' => $this->entityManager->getRepository(Data::class)->findOneBySomeField($this->getUser()->getId()),
+            'dates' => $dates,
+        ]);
+    }
+
+    #[Route('/user_delete/{slug}', name: 'user_delete',methods: ['GET','DELETE'])]
+    public function user_delete($slug)
+    {
+        $user = $this->entityManager->getRepository(User::class)->find($slug);
+
+        $this->entityManager->remove($user);
+        $this->entityManager->flush();
+
+        $data = $this->entityManager->getRepository(User::class)->findAll();
+
+        $dates = !empty($data) ? $data : '';
+
+        return $route = $this->redirectToRoute('admin', [
+            'slug' => $this->getUser()->getId(),
+            'dates' => $dates,
         ]);
     }
 

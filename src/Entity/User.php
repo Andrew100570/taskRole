@@ -32,6 +32,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Data::class)]
+    #[ORM\JoinColumn(nullable: true)]
     private Collection $data;
 
     public function __construct()
